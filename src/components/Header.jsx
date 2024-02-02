@@ -12,10 +12,9 @@ const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
-    const [selectedProduct, setSelectedProduct] = useState(null);
     const navigate = useNavigate()
 
-    const BASE_URL = process.env.BASE_URL
+    const BASE_URL = "http://192.168.1.21:8008"
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -56,11 +55,11 @@ const Header = () => {
         document.addEventListener("click", handleDocumentClick);
         return () => {
             document.removeEventListener("click", handleDocumentClick);
+           
         };
     }, []);
 
     const handleSelectProduct = (product) => {
-        setSelectedProduct(product);
         setSuggestions([]);
         setSearchQuery(product.title);
 

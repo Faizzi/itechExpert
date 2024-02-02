@@ -6,27 +6,51 @@ import { TbLayoutSidebarRightCollapse } from "react-icons/tb";
 import axios from "axios";
 import Slider from "rc-slider";
 import 'rc-slider/assets/index.css';
+import { useNavigate } from "react-router-dom";
 
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [countries, setCountries] = useState("");
+    const [cities, setCities] = useState("");
+    const [states, setStates] = useState("");
     const [priceRangeFrom, setPriceRangeFrom] = useState(0);
     const [priceRangeTo, setPriceRangeTo] = useState(1000);
-    const [location, setLocation] = useState("");
+    const [country, setCountry] = useState("");
+    const [city, setCity] = useState("");
+    const [state, setState] = useState("");
+    const navigate = useNavigate()
 
 
-    const BASE_URL = process.env.BASE_URL
+    const BASE_URL = "http://192.168.1.21:8008"
 
     useEffect(() => {
         const fetchCountries = async () => {
-            const countries = await axios.get(`${BASE_URL}/countries`)
-            console.log({ countries })
-            const data = await countries.data
-            setCountries(data)
+            try {
+                const countries = await axios.get(`${BASE_URL}/countries`)
+                const countriesData = await countries.data
+                console.log({ countriesData })
+                setCountries(countriesData)
+
+
+            } catch (error) {
+                console.log("Error Fetching User Location Data:", { error })
+            }
         }
         fetchCountries();
+
     }, [])
+    const fetchStatesAndCities = async (selectedCountry) => {
+        try {
+            const statesResponse = await axios.get(`${BASE_URL}/states/${selectedCountry}`);
+            const citiesResponse = await axios.get(`${BASE_URL}/cities/${selectedCountry}/${statesResponse.data.body[0]}`);
+
+            setStates(statesResponse.data);
+            setCities(citiesResponse.data);
+        } catch (error) {
+            console.error("Error Fetching States and Cities:", error);
+        }
+    };
 
     const openMenu = () => {
         setIsOpen(true);
@@ -35,9 +59,16 @@ const Sidebar = () => {
     const closeMenu = () => {
         setIsOpen(false);
     };
+    const handleCountryChange =async (e) => {
+        const selectedCountry = e.target.value;
+        setCountry(selectedCountry);
+         setState("")
+         setCity("")
+      await  fetchStatesAndCities(selectedCountry);
+    };
 
-    const handleLocationChange = (e) => {
-        setLocation(e.target.value);
+    const handleStateChange = (e) => {
+        setState(e.target.value);
     };
 
 
@@ -48,9 +79,16 @@ const Sidebar = () => {
     const handlePriceRangeToChange = (newValue) => {
         setPriceRangeTo(newValue);
     };
-    const applyFilters = () => {
 
-    }
+    const applyFilters = () => {
+        if (country && state) {
+            const route = `/product/${country}/${state}`;
+            navigate(route);
+        } else {
+            console.error("Country and State must be selected");
+        }
+    };
+
     return (
         <div >
             <div onClick={openMenu} className="border border-[#493A12] fixed top-[6rem] right-[4rem] p-3 rounded bg-[#FFEBD6] text-[#493A12] cursor-pointer">
@@ -64,21 +102,60 @@ const Sidebar = () => {
                     <FiX size={24} />
                 </div>
 
-                {/* Location Dropdown */}
+                {/* Countries Dropdown */}
                 <div className="p-4">
-                    <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                        Location
+                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+                        Country
                     </label>
                     <select
-                        id="location"
-                        name="location"
-                        onChange={handleLocationChange}
-                        value={location}
+                        id="country"
+                        name="country"
+                        onChange={handleCountryChange}
+                        value={country}
                         className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     >
+                        <option>Select</option>
                         {countries && countries.body.map((country, index) => (
                             <option key={index} value={country}>
                                 {country}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                {/* States Dropdown */}
+                <div className="p-4">
+                    <label htmlFor="states" className="block text-sm font-medium text-gray-700">
+                        State
+                    </label>
+                    <select
+                        id="states"
+                        name="states"
+                        onChange={handleStateChange}
+                        value={state}
+                        className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    > <option>Select</option>
+                        {states && states.body.map((state, index) => (
+                            <option key={index} value={state}>
+                                {state}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                {/* Cities Dropdown */}
+                <div className="p-4">
+                    <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+                        City
+                    </label>
+                    <select
+                        id="city"
+                        name="city"
+                        onChange={(e) => setCity(e.target.value)}
+                        value={city}
+                        className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    > <option>Select</option>
+                        {cities && cities.body.map((city, index) => (
+                            <option key={index} value={city}>
+                                {city}
                             </option>
                         ))}
                     </select>
