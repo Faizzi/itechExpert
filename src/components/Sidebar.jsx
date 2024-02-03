@@ -106,10 +106,13 @@ const Sidebar = () => {
 
 
     const handlePriceRangeFromChange = (newValue) => {
+        console.log("price from:",{newValue})
         setPriceRangeFrom(newValue);
     };
 
     const handlePriceRangeToChange = (newValue) => {
+        console.log("price to:",{newValue})
+
         setPriceRangeTo(newValue);
     };
 

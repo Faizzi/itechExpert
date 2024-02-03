@@ -100,10 +100,12 @@ const Home = () => {
   return (
     <div className="mt-[5rem] px-4 ">
       <div className="mt-5">
-        <h1 className="text-2xl font-semibold mb-3 pt-5 pl-[7rem]">Products</h1>
+        <div className="pl-[7rem]">
+        <h1 className="text-2xl font-semibold mb-3 pt-5">Products</h1>
         {!productFounds && (
           <p className="text-red-500 ">No products found for the given filters.</p>
         )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:px-[5rem] sm:px-0 pt-[2rem] ">
           {showFilteredProducts && filteredData.products && filteredData.products.map((product) => (
             <div 
