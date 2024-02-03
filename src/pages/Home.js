@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { FaRegHeart,FaHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 
 import axios from "axios";
 
@@ -13,7 +13,7 @@ const Home = () => {
   const [showFilteredProducts, setShowFilteredProducts] = useState(true);
   const [productFounds, setProductFounds] = useState(false)
   const [hoveredProductId, setHoveredProductId] = useState(null);
-  const [favorites,setFavorites] = useState([])
+  const [favorites, setFavorites] = useState([])
 
   const BASE_URL = "http://192.168.1.21:8008"
   useEffect(() => {
@@ -23,7 +23,7 @@ const Home = () => {
           `${BASE_URL}/api/product/all`
         );
         const { products } = await response.data.body;
-        console.log({products})
+        console.log({ products })
         if (Array.isArray(products)) {
           const selectedProd = products.find((product) => product._id === productId)
           if (selectedProd) {
@@ -77,7 +77,7 @@ const Home = () => {
     fetchData();
   }, [country, state]);
 
-   const handleMouseEnter = (productId) => {
+  const handleMouseEnter = (productId) => {
     setHoveredProductId(productId);
   };
 
@@ -101,120 +101,118 @@ const Home = () => {
     <div className="mt-[5rem] px-4 ">
       <div className="mt-5">
         <div className="pl-[7rem]">
-        <h1 className="text-2xl font-semibold mb-3 pt-5">Products</h1>
-        {!productFounds && (
-          <p className="text-red-500 ">No products found for the given filters.</p>
-        )}
+          <h1 className="text-2xl font-semibold mb-3 pt-5">Products</h1>
+          {!productFounds && (
+            <p className="text-red-500 ">No products found for the given filters.</p>
+          )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:px-[5rem] sm:px-0 pt-[2rem] ">
           {showFilteredProducts && filteredData.products && filteredData.products.map((product) => (
-            <div 
-            key={product._id} 
-            className="rounded-md shadow-md bg-[#FCF4EC] mb-4 w-[300px] mx-auto"
-            onMouseEnter={() => handleMouseEnter(product._id)}
-            onMouseLeave={handleMouseLeave}
+            <div
+              key={product._id}
+              className="rounded-md shadow-md bg-[#FCF4EC] mb-4 w-[300px] mx-auto"
+              onMouseEnter={() => handleMouseEnter(product._id)}
+              onMouseLeave={handleMouseLeave}
             >
               <div>
-             <div className="relative">
-             <img
-                src={`${BASE_URL}${product.gallery.images[0]}`}
-                alt={product.title}
-                className="w-full h-40 object-cover mb-4 rounded-md]"
-              />
-              <div
-                className={`absolute top-1 right-1 border border-[#493A12] p-2 bg-[#FFEBD6] rounded-[50%] cursor-pointer ${
-                  hoveredProductId === product._id ? 'visible' : 'hidden'
-                }`}
-              >
-                {favorites.includes(product._id) ? (
-                  <FaHeart
-                    onClick={() => handleFavorite(product._id)}
-                    className="text-[#493A12]"
+                <div className="relative">
+                  <img
+                    src={`${BASE_URL}${product.gallery.images[0]}`}
+                    alt={product.title}
+                    className="w-full h-40 object-cover mb-4 rounded-md]"
                   />
-                ) : (
-                  <FaRegHeart
-                    onClick={() => handleFavorite(product._id)}
-                    className="text-black"
-                  />
-                )}
-              </div>
-             </div>
-             </div>
-             <div className="pt-1 px-4 pb-3">
-              <h2 className="text-xl font-bold mb-2 text-center">{product.title}</h2>
-              <div>
-              <p className="text-gray-600 mb-4 text-center h-[80px]">
-               {product.description.length > 80 ? `${product.description.substring(0, 80)}...` : product.description}
-              </p>
-                <hr/>
-              </div>
-              <div className="flex flex-col justify-between h-full">
-                <div className="flex justify-between align-middle">
-                  <p className="text-sm font-bold text-[#493A12] ">
-                  {product.price}$
-                  </p>
-                  <p className="text-sm font-bold text-[#493A12] ">
-                   stock: {product.quantity}
-                  </p>
+                  <div
+                    className={`absolute top-1 right-1 border border-[#493A12] p-2 bg-[#FFEBD6] rounded-[50%] cursor-pointer ${hoveredProductId === product._id ? 'visible' : 'hidden'
+                      }`}
+                  >
+                    {favorites.includes(product._id) ? (
+                      <FaHeart
+                        onClick={() => handleFavorite(product._id)}
+                        className="text-[#493A12]"
+                      />
+                    ) : (
+                      <FaRegHeart
+                        onClick={() => handleFavorite(product._id)}
+                        className="text-black"
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
+              <div className="pt-1 px-4 pb-3">
+                <h2 className="text-xl font-bold mb-2 text-center">{product.title}</h2>
+                <div>
+                  <p className="text-gray-600 mb-4 text-center h-[80px]">
+                    {product.description.length > 80 ? `${product.description.substring(0, 80)}...` : product.description}
+                  </p>
+                  <hr />
+                </div>
+                <div className="flex flex-col justify-between h-full">
+                  <div className="flex justify-between align-middle">
+                    <p className="text-sm font-bold text-[#493A12] ">
+                      {product.price}$
+                    </p>
+                    <p className="text-sm font-bold text-[#493A12] ">
+                      stock: {product.quantity}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
         </div>
 
         {selectedProduct && !showFilteredProducts && (
-            <div 
+          <div
             className="rounded-md shadow-md bg-[#FCF4EC] mb-4 w-[300px] mx-auto"
             onMouseEnter={() => handleMouseEnter(selectedProduct._id)}
             onMouseLeave={handleMouseLeave}
-            >
-              <div>
-             <div className="relative">
-             <img
-                src={`${BASE_URL}${selectedProduct.gallery.images[0]}`}
-                alt={selectedProduct.title}
-                className="w-full h-40 object-cover mb-4 rounded-md]"
-              />
-              <div
-                className={`absolute top-1 right-1 border border-[#493A12] p-2 bg-[#FFEBD6] rounded-[50%] cursor-pointer ${
-                  hoveredProductId === selectedProduct._id ? 'visible' : 'hidden'
-                }`}
-              >
-                {favorites.includes(selectedProduct._id) ? (
-                  <FaHeart
-                    onClick={() => handleFavorite(selectedProduct._id)}
-                    className="text-[#493A12]"
-                  />
-                ) : (
-                  <FaRegHeart
-                    onClick={() => handleFavorite(selectedProduct._id)}
-                    className="text-black"
-                  />
-                )}
+          >
+            <div>
+              <div className="relative">
+                <img
+                  src={`${BASE_URL}${selectedProduct.gallery.images[0]}`}
+                  alt={selectedProduct.title}
+                  className="w-full h-40 object-cover mb-4 rounded-md]"
+                />
+                <div
+                  className={`absolute top-1 right-1 border border-[#493A12] p-2 bg-[#FFEBD6] rounded-[50%] cursor-pointer ${hoveredProductId === selectedProduct._id ? 'visible' : 'hidden'
+                    }`}
+                >
+                  {favorites.includes(selectedProduct._id) ? (
+                    <FaHeart
+                      onClick={() => handleFavorite(selectedProduct._id)}
+                      className="text-[#493A12]"
+                    />
+                  ) : (
+                    <FaRegHeart
+                      onClick={() => handleFavorite(selectedProduct._id)}
+                      className="text-black"
+                    />
+                  )}
+                </div>
               </div>
-             </div>
-             </div>
-             <div className="pt-1 px-4 pb-3">
+            </div>
+            <div className="pt-1 px-4 pb-3">
               <h2 className="text-xl font-bold mb-2 text-center">{selectedProduct.title}</h2>
               <div>
-              <p className="text-gray-600 mb-4 text-center h-[80px]">
-               {selectedProduct.description.length > 80 ? `${selectedProduct.description.substring(0, 80)}...` : selectedProduct.description}
-              </p>
-                <hr/>
+                <p className="text-gray-600 mb-4 text-center h-[80px]">
+                  {selectedProduct.description.length > 80 ? `${selectedProduct.description.substring(0, 80)}...` : selectedProduct.description}
+                </p>
+                <hr />
               </div>
               <div className="flex flex-col justify-between h-full">
                 <div className="flex justify-between align-middle">
                   <p className="text-sm font-bold text-[#493A12] ">
-                  {selectedProduct.price}$
+                    {selectedProduct.price}$
                   </p>
                   <p className="text-sm font-bold text-[#493A12] ">
-                   stock: {selectedProduct.quantity}
+                    stock: {selectedProduct.quantity}
                   </p>
                 </div>
               </div>
-              </div>
             </div>
+          </div>
         )}
       </div>
     </div>

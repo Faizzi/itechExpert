@@ -118,7 +118,7 @@ const Sidebar = () => {
 
     const applyFilters = () => {
         if (country && state) {
-            const route = `/product/${country}/${state}`;
+            const route = `/product/${country}/${state}/${priceRangeTo}`;
             navigate(route);
         } else {
             console.error("Country and State must be selected");
