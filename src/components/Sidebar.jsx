@@ -23,14 +23,23 @@ const Sidebar = () => {
 
 
     const BASE_URL = "http://192.168.1.21:8008"
+    const API_KEY = "461aeeb239f1410da89b21dba95421b1"
 
     useEffect(() => {
         const fetchCountries = async () => {
             try {
                 const countries = await axios.get(`${BASE_URL}/countries`)
                 const countriesData = await countries.data
-                console.log({ countriesData })
                 setCountries(countriesData)
+
+                // fetch user location
+                const userLocation = await getUserLocation();
+                if (userLocation) {
+                    setCountry(userLocation.country)
+                    setState(userLocation.state)
+                    setCity(userLocation.city)
+                    await fetchStatesAndCities(userLocation.country);
+                }
 
 
             } catch (error) {
@@ -38,8 +47,31 @@ const Sidebar = () => {
             }
         }
         fetchCountries();
-
     }, [])
+
+    // Here we have converted the coords to country,state & city
+    const getUserLocation = async () => {
+        try {
+            const position = await getCurrentPosition();
+            if (position) {
+                const { latitude, longitude } = position.coords;
+                const response = await axios.get(`https://api.opencagedata.com/geocode/v1/json?key=${API_KEY}&q=${latitude}+${longitude}&pretty=1`)
+                const { city, country, state } = await response.data.results[0]?.components || {}
+                console.log(`Country:${country} State:${state} City:${city}`)
+                return { country, state, city }
+            }
+        } catch (error) {
+            console.error("Error getting user location:", error);
+            return null;
+        }
+    }
+
+    const getCurrentPosition = () => {
+        return new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject)
+        })
+    }
+    // Here we have fetched the states and cities based on the country
     const fetchStatesAndCities = async (selectedCountry) => {
         try {
             const statesResponse = await axios.get(`${BASE_URL}/states/${selectedCountry}`);
@@ -47,6 +79,7 @@ const Sidebar = () => {
 
             setStates(statesResponse.data);
             setCities(citiesResponse.data);
+
         } catch (error) {
             console.error("Error Fetching States and Cities:", error);
         }
@@ -59,12 +92,12 @@ const Sidebar = () => {
     const closeMenu = () => {
         setIsOpen(false);
     };
-    const handleCountryChange =async (e) => {
+    const handleCountryChange = async (e) => {
         const selectedCountry = e.target.value;
         setCountry(selectedCountry);
-         setState("")
-         setCity("")
-      await  fetchStatesAndCities(selectedCountry);
+        setState("")
+        setCity("")
+        await fetchStatesAndCities(selectedCountry);
     };
 
     const handleStateChange = (e) => {
@@ -91,10 +124,10 @@ const Sidebar = () => {
 
     return (
         <div >
-            <div onClick={openMenu} className="border border-[#493A12] fixed top-[6rem] right-[4rem] p-3 rounded bg-[#FFEBD6] text-[#493A12] cursor-pointer">
+            <div onClick={openMenu} className="border border-[#493A12] fixed top-[6rem] right-[4rem] p-3 rounded bg-[#FFEBD6] text-[#493A12] cursor-pointer ">
                 <TbLayoutSidebarRightCollapse size={24} />
             </div>
-            <div className={`fixed top-[4rem] right-0 h-full w-[20rem] bg-[#FCF4EC] border border-gray-300 overflow-y-auto transition-transform transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className={`fixed top-[4rem] right-0 h-full w-[20rem] bg-[#FCF4EC] border border-gray-300 overflow-y-auto transition-transform transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} z-[9999]`}>
 
 
                 {/* Close Icon */}
@@ -153,11 +186,13 @@ const Sidebar = () => {
                         value={city}
                         className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     > <option>Select</option>
-                        {cities && cities.body.map((city, index) => (
+                       {cities && cities.body ? (
+                        cities.body.map((city, index) => (
                             <option key={index} value={city}>
                                 {city}
                             </option>
-                        ))}
+                        ))
+                    ) : null}
                     </select>
                 </div>
 
