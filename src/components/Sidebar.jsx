@@ -124,7 +124,7 @@ const Sidebar = () => {
 
     return (
         <div >
-            <div onClick={openMenu} className="border border-[#493A12] fixed top-[6rem] right-[4rem] p-3 rounded bg-[#FFEBD6] text-[#493A12] cursor-pointer ">
+            <div onClick={openMenu} className="border border-[#493A12] fixed top-[6rem] right-[1rem] p-3 rounded bg-[#FFEBD6] text-[#493A12] cursor-pointer z-[9999]">
                 <TbLayoutSidebarRightCollapse size={24} />
             </div>
             <div className={`fixed top-[4rem] right-0 h-full w-[20rem] bg-[#FCF4EC] border border-gray-300 overflow-y-auto transition-transform transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} z-[9999]`}>
